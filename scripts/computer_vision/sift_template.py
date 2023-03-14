@@ -71,6 +71,12 @@ def cd_sift_ransac(img, template):
 
 		x_min = y_min = x_max = y_max = 0
 
+		dst = cv.perspectiveTransform(pts,M)
+		print(dst)
+
+		# min_x, min_y = np.int32(pts.min(axis=0))
+		# max_x, max_y = np.int32(pts.max(axis=0))
+
 		########### YOUR CODE ENDS HERE ###########
 
 		# Return bounding box
@@ -116,9 +122,21 @@ def cd_template_matching(img, template):
 		# Use OpenCV template matching functions to find the best match
 		# across template scales.
 
-		# Remember to resize the bounding box using the highest scoring scale
-		# x1,y1 pixel will be accurate, but x2,y2 needs to be correctly scaled
-		bounding_box = ((0,0),(0,0))
-		########### YOUR CODE ENDS HERE ###########
+		res = cv2.matchTemplate(img_canny, resized_template, cv2.TM_CCORR_NORMED)
+		min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
+		if best_match is None or max_val > best_match:
+			best_match = max_val
+
+			bottom_left = max_loc
+			top_right = (max_loc[0] + w, max_loc[1] + h)
+
+			# Remember to resize the bounding box using the highest scoring scale
+			# x1,y1 pixel will be accurate, but x2,y2 needs to be correctly scaled
+			bounding_box = (bottom_left, top_right)
+			# print(bounding_box)
+
+		########### YOUR CODE ENDS HERE ###########
+	cv2.rectangle(img_canny,bottom_left, top_right, 255, 2)
+	image_print(img_canny)
 	return bounding_box
