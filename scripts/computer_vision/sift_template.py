@@ -69,17 +69,30 @@ def cd_sift_ransac(img, template):
 
 		########## YOUR CODE STARTS HERE ##########
 
-		x_min = y_min = x_max = y_max = 0
-
-		dst = cv.perspectiveTransform(pts,M)
+		dst = cv2.perspectiveTransform(pts,M)
 		print(dst)
 
-		# min_x, min_y = np.int32(pts.min(axis=0))
-		# max_x, max_y = np.int32(pts.max(axis=0))
+		x_min, y_min = dst.min(axis = 0)[0]
+		x_max, y_max = dst.max(axis = 0)[0]
+
+		img2 = cv2.polylines(img,[np.int32(dst)],True,255,3, cv2.LINE_AA)
+
+		draw_params = dict(matchColor = (0,255,0), # draw matches in green color
+                   singlePointColor = None,
+                   matchesMask = matchesMask, # draw only inliers
+                   flags = 2)
+
+		img3 = cv2.drawMatches(template,kp1,img2,kp2,good,None,**draw_params)
+		# image_print(img3)
+
+		cv2.rectangle(img,(x_min, y_min), (x_max, y_max), 255, 2)
+		# image_print(img3)
+		image_print(img)
 
 		########### YOUR CODE ENDS HERE ###########
 
 		# Return bounding box
+		print('box: ', (x_min, y_min), (x_max, y_max))
 		return ((x_min, y_min), (x_max, y_max))
 	else:
 
