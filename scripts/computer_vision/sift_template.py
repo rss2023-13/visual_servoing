@@ -70,7 +70,6 @@ def cd_sift_ransac(img, template):
 		########## YOUR CODE STARTS HERE ##########
 
 		dst = cv2.perspectiveTransform(pts,M)
-		print(dst)
 
 		x_min, y_min = dst.min(axis = 0)[0]
 		x_max, y_max = dst.max(axis = 0)[0]
