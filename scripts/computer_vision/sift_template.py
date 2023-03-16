@@ -92,7 +92,7 @@ def cd_sift_ransac(img, template):
 		########### YOUR CODE ENDS HERE ###########
 
 		# Return bounding box
-		print('box: ', (x_min, y_min), (x_max, y_max))
+		#print('box: ', (x_min, y_min), (x_max, y_max))
 		return ((x_min, y_min), (x_max, y_max))
 	else:
 
