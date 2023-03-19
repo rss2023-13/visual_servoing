@@ -38,7 +38,7 @@ def cd_color_segmentation(img, template=None):
 
 	# For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
 	#create a mask for green colour using inRange function
-	mask = cv2.inRange(img_hsv, np.array([6,190,150]), np.array([30,255,255]))
+	mask = cv2.inRange(img_hsv, np.array([1,190,150]), np.array([30,255,255]))
 	
     
 
@@ -50,7 +50,7 @@ def cd_color_segmentation(img, template=None):
 	x, y, w, h = cv2.boundingRect(cone_cnt)
 	bounding_box = ((x,y),(x+w,y+h))
 
-	if True:
+	if False:
 		cv2.drawContours(img, contours, -1, (0,255,0), 3)
 		cv2.rectangle(img, bounding_box[0], bounding_box[1], (0,0, 255), 2)
 		cv2.imshow("mask", mask)
@@ -61,7 +61,7 @@ def cd_color_segmentation(img, template=None):
 	return bounding_box
 
 # test imgs
-img = cv2.imread("computer_vision/test_images_cone/test15.jpg")
+# img = cv2.imread("computer_vision/test_images_cone/test15.jpg")
 
 # slicing image
 #lower = .5
@@ -76,4 +76,4 @@ img = cv2.imread("computer_vision/test_images_cone/test15.jpg")
 #cv2.waitKey(0)
 #cv2.destroyAllWindows()
 
-cd_color_segmentation(img)
+# cd_color_segmentation(img)

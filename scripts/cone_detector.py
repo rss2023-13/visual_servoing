@@ -52,7 +52,7 @@ class ConeDetector():
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
-        image = self.slice_img(image, .5, .75)
+        # image = self.slice_img(image, .5, .75) # for line following
         
         top_left, bottom_right = cd_color_segmentation(image)
         img_width = bottom_right[0] - top_left[0]
