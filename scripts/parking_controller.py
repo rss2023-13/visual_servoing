@@ -51,27 +51,23 @@ class ParkingController():
         x_error = self.relative_x - self.parking_distance
         angle = np.arctan2(self.relative_y, self.relative_x)
         overall_error = np.linalg.norm([x_error, y_error])
-        # if np.abs(y_error) > np.abs(x_error):
-        #     error_to_use = y_error
-        # else:
-        #     error_to_use = x_error
-        error_to_use = x_error + y_error * np.random.uniform(.8, 1.2)  #np.abs(angle)
-        rospy.loginfo("overall error" + str(overall_error))
-        rospy.loginfo("x error" + str(x_error))
-        rospy.loginfo("y error" + str(y_error))
-        # error_to_use = overall_error # This doesn't work for some reason
-
-        # Set the steering angle
-        steering_angle = self.steering_kp * angle
-
-
-        # Set the velocity
-        if x_error >= 0:
-            velocity = self.velocity_kp * overall_error #error_to_use
-        elif x_error > -.05:
-            velocity = self.velocity_kp * y_error
+        rospy.loginfo("angle = " + str(angle * 180 / np.pi))
+        spin = (angle > np.pi / -4) and (angle < np.pi / 4)
+        if  not spin:
+            steering_angle = .7
+            velocity = self.velocity_max
         else:
-            velocity = self.velocity_kp * x_error
+            # Set the steering angle
+            steering_angle = self.steering_kp * angle
+
+
+            # Set the velocity
+            if x_error >= 0:
+                velocity = self.velocity_kp * overall_error #error_to_use
+            elif x_error > -.05:
+                velocity = self.velocity_kp * y_error
+            else:
+                velocity = self.velocity_kp * x_error
 
 
         drive_cmd.drive.steering_angle = steering_angle
@@ -96,6 +92,7 @@ class ParkingController():
         error_msg.distance_error = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
         #################################
+        
         
         self.error_pub.publish(error_msg)
 
