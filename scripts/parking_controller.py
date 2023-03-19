@@ -26,6 +26,15 @@ class ParkingController():
         self.relative_x = 0
         self.relative_y = 0
 
+        self.steering_kp = 1
+        self.steering_kd = 0
+        self.steering_ki = 0
+
+        self.velocity_kp = 1
+        self.velocity_kd = 0
+        self.velocity_ki = 0
+        self.velocity_max = 1
+
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
         self.relative_y = msg.y_pos
@@ -33,8 +42,40 @@ class ParkingController():
 
         #################################
 
-        # YOUR CODE HERE
-        # Use relative position and your control law to set drive_cmd
+        # Goal: Drive to a distance of self.parking_distance away from cone
+        # Also, make sure to face the cone
+        # Goal is to move the x_error and y_error to 0, where x_error = self.relative_x - self.parking_distance
+        # and y_error = self.relative_y
+        
+        y_error = self.relative_y
+        x_error = self.relative_x - self.parking_distance
+        angle = np.arctan2(self.relative_y, self.relative_x)
+        overall_error = np.linalg.norm([x_error, y_error])
+        # if np.abs(y_error) > np.abs(x_error):
+        #     error_to_use = y_error
+        # else:
+        #     error_to_use = x_error
+        error_to_use = x_error + y_error * np.random.uniform(.8, 1.2)  #np.abs(angle)
+        rospy.loginfo("overall error" + str(overall_error))
+        rospy.loginfo("x error" + str(x_error))
+        rospy.loginfo("y error" + str(y_error))
+        # error_to_use = overall_error # This doesn't work for some reason
+
+        # Set the steering angle
+        steering_angle = self.steering_kp * angle
+
+
+        # Set the velocity
+        if x_error >= 0:
+            velocity = self.velocity_kp * overall_error #error_to_use
+        elif x_error > -.05:
+            velocity = self.velocity_kp * y_error
+        else:
+            velocity = self.velocity_kp * x_error
+
+
+        drive_cmd.drive.steering_angle = steering_angle
+        drive_cmd.drive.speed = np.min([velocity, self.velocity_max])
 
         #################################
 
@@ -47,11 +88,12 @@ class ParkingController():
         with rqt_plot to plot the success of the controller
         """
         error_msg = ParkingError()
-
         #################################
 
         # YOUR CODE HERE
-        # Populate error_msg with relative_x, relative_y, sqrt(x^2+y^2)
+        error_msg.x_error = self.relative_x
+        error_msg.y_error = self.relative_y
+        error_msg.distance_error = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
         #################################
         

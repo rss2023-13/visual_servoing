@@ -70,7 +70,6 @@ def cd_sift_ransac(img, template):
 		########## YOUR CODE STARTS HERE ##########
 
 		dst = cv2.perspectiveTransform(pts,M)
-		print(dst)
 
 		x_min, y_min = dst.min(axis = 0)[0]
 		x_max, y_max = dst.max(axis = 0)[0]
@@ -92,11 +91,11 @@ def cd_sift_ransac(img, template):
 		########### YOUR CODE ENDS HERE ###########
 
 		# Return bounding box
-		print('box: ', (x_min, y_min), (x_max, y_max))
+		#print('box: ', (x_min, y_min), (x_max, y_max))
 		return ((x_min, y_min), (x_max, y_max))
 	else:
 
-		print "[SIFT] not enough matches; matches: ", len(good)
+		print ("[SIFT] not enough matches; matches: ", len(good))
 
 		# Return bounding box of area 0 if no match found
 		return ((0,0), (0,0))
