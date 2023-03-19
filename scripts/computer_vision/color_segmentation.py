@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import pdb
-
+import os
 #################### X-Y CONVENTIONS #########################
 # 0,0  X  > > > > >
 #
@@ -23,7 +23,7 @@ def image_print(img):
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 
-def cd_color_segmentation(img, template):
+def cd_color_segmentation(img, template=None):
 	"""
 	Implement the cone detection using color segmentation algorithm
 	Input:
@@ -34,10 +34,29 @@ def cd_color_segmentation(img, template):
 				(x1, y1) is the top left of the bbox and (x2, y2) is the bottom right of the bbox
 	"""
 	########## YOUR CODE STARTS HERE ##########
+	img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) 	#convert the BGR image to HSV colour space
 
-	bounding_box = ((0,0),(0,0))
+	# For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
+	#create a mask for green colour using inRange function
+	mask = cv2.inRange(img_hsv, np.array([6,190,150]), np.array([30,255,255]))
 
-	########### YOUR CODE ENDS HERE ###########
+	contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+	
+	contourAreas = [cv2.contourArea(c) for c in contours] # area of contours
+	cone_cnt = contours[contourAreas.index(max(contourAreas))] # the biggest match is most likely
 
-	# Return bounding box
+	x, y, w, h = cv2.boundingRect(cone_cnt)
+	bounding_box = ((x,y),(x+w,y+h))
+
+	if False:
+		cv2.drawContours(img, contours, -1, (0,255,0), 3)
+		cv2.rectangle(img, bounding_box[0], bounding_box[1], (0,0, 255), 2)
+		cv2.imshow("contour", img)
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
+
 	return bounding_box
+
+# test imgs
+#img = cv2.imread("computer_vision/test_images_cone/test12.jpg")
+#cd_color_segmentation(img)
