@@ -11,6 +11,16 @@ from sensor_msgs.msg import Image
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
 from visual_servoing.msg import ConeLocation, ConeLocationPixel
+from geometry_msgs.msg import Point
+
+METERS_PER_INCH = 0.0254
+
+INCHES_PER_METER = 1 / METERS_PER_INCH
+
+# PIXEL_TOPIC = '/zed/zed_node/rgb/image_rect_color_mouse_left'
+PIXEL_TOPIC = "/relative_cone_px"
+
+
 
 #The following collection of pixel locations and corresponding relative
 #ground plane locations are used to compute our homography matrix
@@ -20,10 +30,10 @@ from visual_servoing.msg import ConeLocation, ConeLocationPixel
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[-1, -1],
-                   [-1, -1],
-                   [-1, -1],
-                   [-1, -1]] # dummy points
+PTS_IMAGE_PLANE = [[231, 281],
+                   [237, 242],
+                   [341, 266],
+                   [412, 251]] # dummy points
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -31,18 +41,18 @@ PTS_IMAGE_PLANE = [[-1, -1],
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[-1, -1],
-                    [-1, -1],
-                    [-1, -1],
-                    [-1, -1]] # dummy points
+PTS_GROUND_PLANE = [[22.24409449,  8.07086614],
+       [32.67716535, 10.03937008],
+       [23.62204724,  0.98425197],
+       [28.34645669, -4.92125984]] # dummy points
 ######################################################
 
-METERS_PER_INCH = 0.0254
+
 
 
 class HomographyTransformer:
     def __init__(self):
-        self.cone_px_sub = rospy.Subscriber("/relative_cone_px", ConeLocationPixel, self.cone_detection_callback)
+        self.cone_px_sub = rospy.Subscriber(PIXEL_TOPIC, ConeLocationPixel, self.cone_detection_callback)
         self.cone_pub = rospy.Publisher("/relative_cone", ConeLocation, queue_size=10)
 
         self.marker_pub = rospy.Publisher("/cone_marker",
@@ -77,6 +87,8 @@ class HomographyTransformer:
         relative_xy_msg.y_pos = y
 
         self.cone_pub.publish(relative_xy_msg)
+
+        self.draw_marker(x, y, '/base_link')
 
 
     def transformUvToXy(self, u, v):
