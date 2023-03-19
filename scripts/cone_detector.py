@@ -30,6 +30,13 @@ class ConeDetector():
         self.image_sub = rospy.Subscriber("/zed/zed_node/rgb/image_rect_color", Image, self.image_callback)
         self.bridge = CvBridge() # Converts between ROS images and OpenCV Images
 
+
+    def slice_img(self, img, lower, upper): # replace 
+        img[:int(lower*img.shape[0])] = (0,0,0)
+        img[int(upper*img.shape[0]):] = (0,0,0)
+
+        return img
+    
     def image_callback(self, image_msg):
         # Apply your imported color segmentation function (cd_color_segmentation) to the image msg here
         # From your bounding box, take the center pixel on the bottom
@@ -44,6 +51,9 @@ class ConeDetector():
         #################################
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+
+        image = self.slice_img(image, .5, .75)
+        
         top_left, bottom_right = cd_color_segmentation(image)
         img_width = bottom_right[0] - top_left[0]
 
