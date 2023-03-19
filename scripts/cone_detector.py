@@ -41,10 +41,17 @@ class ConeDetector():
         # YOUR CODE HERE
         # detect the cone and publish its
         # pixel location in the image.
-        # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         #################################
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        bottom_left, bottom_right = cd_color_segmentation(image)
+        img_width = bottom_right[0] - bottom_left[0]
+
+        cone_loc = ConeLocationPixel()
+        cone_loc.u = bottom_right[0] - img_width/2
+        cone_loc.v = bottom_right[1]
+
+        self.cone_pub.publish(cone_loc)
 
         debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
         self.debug_pub.publish(debug_msg)
