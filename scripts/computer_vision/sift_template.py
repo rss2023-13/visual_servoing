@@ -150,6 +150,8 @@ def cd_template_matching(img, template):
 			# print(bounding_box)
 
 		########### YOUR CODE ENDS HERE ###########
+	cv2.rectangle(img,bottom_left, top_right, 255, 2)
 	cv2.rectangle(img_canny,bottom_left, top_right, 255, 2)
+	image_print(img)
 	image_print(img_canny)
 	return bounding_box
