@@ -52,14 +52,14 @@ class ConeDetector():
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
-        image = self.slice_img(image, .5, .75) # for line following
+        image = self.slice_img(image, .5, .9) # for line following
         
         top_left, bottom_right = cd_color_segmentation(image)
         img_width = bottom_right[0] - top_left[0]
 
         cone_loc = ConeLocationPixel()
-        cone_loc.u = bottom_right[0] - img_width/2
-        cone_loc.v = bottom_right[1]
+        cone_loc.u = top_left[0] + img_width/2
+        cone_loc.v = top_left[1]
 
         self.cone_pub.publish(cone_loc)
 
