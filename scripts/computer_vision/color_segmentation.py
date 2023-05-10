@@ -37,23 +37,22 @@ def cd_color_segmentation(img, template=None):
 	img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) 	#convert the BGR image to HSV colour space
 
 	# For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
-	#create a mask for green colour using inRange function
-	mask = cv2.inRange(img_hsv, np.array([1,190,150]), np.array([30,255,255]))
-	
+	#create a mask for orange colour using inRange function
+	mask = cv2.inRange(img_hsv, np.array([1,140,150]), np.array([40,255,255]))
     
 
 	contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
 	
 	contourAreas = [cv2.contourArea(c) for c in contours] # area of contours
-	cone_cnt = contours[contourAreas.index(max(contourAreas))] # the biggest match is most likely
+	cone_cnt = contours[contourAreas.index(max(contourAreas))]# the biggest match is most likely
 
 	x, y, w, h = cv2.boundingRect(cone_cnt)
 	bounding_box = ((x,y),(x+w,y+h))
 
-	if False:
+	if True:
 		cv2.drawContours(img, contours, -1, (0,255,0), 3)
 		cv2.rectangle(img, bounding_box[0], bounding_box[1], (0,0, 255), 2)
-		cv2.imshow("mask", mask)
+		# cv2.imshow("mask", mask)
 		cv2.imshow("contour", img)
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
@@ -61,19 +60,19 @@ def cd_color_segmentation(img, template=None):
 	return bounding_box
 
 # test imgs
-# img = cv2.imread("computer_vision/test_images_cone/test15.jpg")
+img = cv2.imread("scripts/cityline.png")
 
-# slicing image
-#lower = .5
-#upper = .75
+# # slicing image
+# lower = 0
+# upper = 1
 
-#img[:int(lower*img.shape[0])] = (0,0,0)
-#img[int(upper*img.shape[0]):] = (0,0,0)
+# img[:int(lower*img.shape[0])] = (0,0,0)
+# img[int(upper*img.shape[0]):] = (0,0,0)
 
-#cv2.imshow("slice", img)
+# cv2.imshow("slice", img)
 
 
-#cv2.waitKey(0)
-#cv2.destroyAllWindows()
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
-# cd_color_segmentation(img)
+cd_color_segmentation(img)
