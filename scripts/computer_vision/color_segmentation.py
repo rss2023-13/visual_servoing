@@ -51,7 +51,7 @@ def cd_color_segmentation(img, template=None):
 	x, y, w, h = cv2.boundingRect(cone_cnt)
 	bounding_box = ((x,y),(x+w,y+h))
 
-	if True:
+	if False:
 		cv2.drawContours(img, contours, -1, (0,255,0), 3)
 		cv2.rectangle(img, bounding_box[0], bounding_box[1], (0,0, 255), 2)
 		# cv2.imshow("mask", mask)
@@ -62,7 +62,7 @@ def cd_color_segmentation(img, template=None):
 	return bounding_box
 
 # test imgs
-img = cv2.imread("scripts/computer_vision/johnsoncity2.png")
+# img = cv2.imread("scripts/computer_vision/johnsoncity2.png")
 
 # # slicing image
 # lower = 0
@@ -77,4 +77,4 @@ img = cv2.imread("scripts/computer_vision/johnsoncity2.png")
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 
-cd_color_segmentation(img)
+# cd_color_segmentation(img)
