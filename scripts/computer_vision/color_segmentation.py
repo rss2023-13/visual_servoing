@@ -38,7 +38,9 @@ def cd_color_segmentation(img, template=None):
 
 	# For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]
 	#create a mask for orange colour using inRange function
-	mask = cv2.inRange(img_hsv, np.array([1,140,150]), np.array([40,255,255]))
+	# mask = cv2.inRange(img_hsv, np.array([1,130,100]), np.array([40,255,255])) # range for city in stata
+	
+	mask = cv2.inRange(img_hsv, np.array([10,130,100]), np.array([45,255,255])) # range for city in johnson
     
 
 	contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
@@ -60,7 +62,7 @@ def cd_color_segmentation(img, template=None):
 	return bounding_box
 
 # test imgs
-img = cv2.imread("scripts/cityline.png")
+img = cv2.imread("scripts/computer_vision/johnsoncity2.png")
 
 # # slicing image
 # lower = 0
