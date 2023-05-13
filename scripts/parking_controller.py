@@ -27,14 +27,14 @@ class ParkingController():
         self.relative_x = 0
         self.relative_y = 0
 
-        self.steering_kp = 1.9
-        self.steering_kd = 0.05
+        self.steering_kp = 1.6 # car 14: 1.9
+        self.steering_kd = 0.07 # car 14: .05
         self.steering_ki = 0
 
         self.velocity_kp = 1
         self.velocity_kd = 0
         self.velocity_ki = 0
-        self.velocity_max = 0.5
+        self.velocity_max = 0.4
 
 	self.prev_error = 0
 	self.prev_time = rospy.get_time()
@@ -55,7 +55,7 @@ class ParkingController():
         x_error = self.relative_x - self.parking_distance
         angle = np.arctan2(self.relative_y, self.relative_x)
         overall_error = np.linalg.norm([x_error, y_error])
-        rospy.loginfo("angle = " + str(angle * 180 / np.pi))
+        #rospy.loginfo("angle = " + str(angle * 180 / np.pi))
         spin = (angle > np.pi / -4) and (angle < np.pi / 4)
         if  not spin:
             steering_angle = .7

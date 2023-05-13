@@ -30,6 +30,9 @@ class ConeDetector():
         self.image_sub = rospy.Subscriber("/zed/zed_node/rgb/image_rect_color", Image, self.image_callback)
         self.bridge = CvBridge() # Converts between ROS images and OpenCV Images
 
+        #self.desired_turns = ["left", "right", "right", "left"]
+        #self.last_state = "straight"
+        #self.current_turn = 0
 
     def slice_img(self, img, lower, upper): # replace 
         img[:int(lower*img.shape[0])] = (0,0,0)
@@ -52,14 +55,48 @@ class ConeDetector():
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
-        image = self.slice_img(image, .5, .9) # for line following
+        image = self.slice_img(image, .7, .9) # for line following
         
         top_left, bottom_right = cd_color_segmentation(image)
-        img_width = bottom_right[0] - top_left[0]
+        total_width = image.shape[1] # width of full image
 
+        box_width = bottom_right[0] - top_left[0]
+        #print(total_width, box_width)
         cone_loc = ConeLocationPixel()
-        cone_loc.u = top_left[0] + img_width/2
         cone_loc.v = top_left[1]
+ #       cone_loc.u = top_left[0] + box_width/2
+        
+        #print("current:", self.last_state, ", on turn #", self.current_turn)
+
+        if box_width / float(total_width) > 1./3:# detecting turn
+            #if bottom_right[0] > total_width*2/3 and top_left[0] > total_width/4: # tape goes to the right
+            #print(total_width-bottom_right[0], top_left[0])
+
+            if total_width - bottom_right[0] < top_left[0] and bottom_right[0] > total_width * 2/3. and top_left[0] > 1/3.:# and self.current_turn in (1, 2): #right turn
+                cone_loc.u = top_left[0] + box_width * 4/5.
+                print("detecting right turn")
+                #if "right" != self.last_state:
+                    #self.last_state = "right"
+
+            elif total_width - bottom_right[0] > top_left[0] and top_left[0] < total_width * 1/3. and bottom_right[0] > 2/3.:# and self.current_turn in (0,3): # tape goes to the left
+                cone_loc.u = top_left[0] + box_width * 1/5.
+                print("detecting left turn")
+                #if "left" != self.last_state :
+                    #self.last_state = "left"
+                    
+
+            else:
+                cone_loc.u = top_left[0] + box_width/2
+                print("go straight2")
+                #if "straight" != self.last_state:
+                    #self.last_state = "straight"
+                    #self.current_turn += 1 # increment next turn to look for
+        else:
+            cone_loc.u = top_left[0] + box_width/2
+            #if "straight" != self.last_state:
+                #self.last_state = "straight"
+                #self.current_turn += 1
+            print("go straight")
 
         self.cone_pub.publish(cone_loc)
 
